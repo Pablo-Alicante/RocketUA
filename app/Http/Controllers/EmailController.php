@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class EmailController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $emails = Email::all();
@@ -17,51 +14,68 @@ class EmailController extends Controller
         return view('emails.index', ['emails' => $emails]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('emails.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'to' => 'required|email',
+            'from' => 'required|email',
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+        ]);
+
+        $emails = new Email;
+        $emails->to = $request->to;
+        $emails->from = $request->from;
+        $emails->subject = $request->subject;
+        $emails->body = $request->body;
+        $emails->save();
+
+        return redirect()->route('emails.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $emails = Email::find($id);
+
+        return view('emails.show', ['emails' => $emails]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $emails = Email::find($id);
+
+        return view('emails.edit', ['emails' => $emails]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'to' => 'required|email',
+            'from' => 'required|email',
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+        ]);
+
+        $emails = Email::find($id);
+        $emails->to = $request->to;
+        $emails->from = $request->from;
+        $emails->subject = $request->subject;
+        $emails->body = $request->body;
+        $emails->save();
+
+        return redirect()->route('emails.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $emails = Email::find($id);
+        $emails->delete();
+
+        return redirect()->route('emails.index')->with('success', 'Email borrado ');
     }
 }
